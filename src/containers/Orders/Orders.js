@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Route, Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import Order from '../../components/Order/Order';
@@ -13,16 +14,29 @@ class Orders extends Component {
         this.props.onFetchOrders();
     }
 
+    orderDeleteHandler = (orderId) => {
+        console.log(orderId);
+        this.props.onDeleteOrder(orderId);
+    }
+
     render () {
         let orders = <Spinner />;
-        if (!this.props.loading) {
-            orders = this.props.orders.map(order => (
+        if (!this.props.loading ) {
+            const deleteRedirect = this.props.deleted ? <Redirect  to="/orders"/> : null; 
+            orders = 
+                <div>
+                    {deleteRedirect}
+                    {this.props.orders.map(order => (
                     <Order
                         key={order.id}
                         ingredients={order.ingredients}
                         price={order.totalPrice}
+                        delete={() => {this.orderDeleteHandler(order.id)}}
                     />
-                ));
+                ))};
+
+                </div>
+                
         }
         return (
             <div className={classes.Orders}>
@@ -37,13 +51,15 @@ class Orders extends Component {
 const mapStateToProps = state => {
     return {
         orders: state.order.orders,
-        loading: state.order.loading
+        loading: state.order.loading,
+        deleted: state.order.deleted
     }
 };
 
 const mapDispatchToProps = dispatch  => {
     return {
-        onFetchOrders: () => dispatch(actions.fetchOrders())
+        onFetchOrders: () => dispatch(actions.fetchOrders()),
+        onDeleteOrder: (orderId) => dispatch(actions.deleteOrder(orderId))
     }
 };
 
