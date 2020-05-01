@@ -9,3 +9,7 @@ export {
     fetchOrders,
     deleteOrder
 } from './order';
+export {
+    auth,
+    logout
+} from './auth';
